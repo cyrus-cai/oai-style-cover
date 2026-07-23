@@ -3,10 +3,54 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>oai-style-cover</title>
-<meta name="description" content="oai-style-cover — nine editorial cover styles, rendered procedurally in pure Canvas.">
-<link rel="icon" type="image/png" href="favicon.png?v=37">
-<link rel="stylesheet" href="style.css?v=37">
+<title>Editorial cover generator, nine styles — oai-style-cover</title>
+<meta name="description" content="Nine editorial cover styles for posts, decks and social cards. Drawn in your browser with Canvas 2D and exported up to 5K PNG. Free, no sign-up, no upload.">
+<link rel="canonical" href="https://oai-cover.vercel.app/">
+<meta name="theme-color" content="#0c0c0e">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="oai-style-cover">
+<meta property="og:url" content="https://oai-cover.vercel.app/">
+<meta property="og:title" content="Editorial cover generator, nine styles — oai-style-cover">
+<meta property="og:description" content="Nine editorial cover styles for posts, decks and social cards. Drawn in your browser with Canvas 2D and exported up to 5K PNG. Free, no sign-up, no upload.">
+<meta property="og:image" content="https://oai-cover.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Nine cover styles leaning side by side on a dark shelf">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@cyrusss_7">
+<meta name="twitter:creator" content="@cyrusss_7">
+
+<link rel="icon" type="image/png" href="favicon.png?v=38">
+<link rel="apple-touch-icon" href="favicon.png?v=38">
+<link rel="stylesheet" href="style.css?v=38">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "oai-style-cover",
+  "url": "https://oai-cover.vercel.app/",
+  "description": "An editorial cover generator. Nine cover styles are drawn in the browser with Canvas 2D and exported as PNG up to 5120 px. No image model, no upload, no account.",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "Any browser",
+  "browserRequirements": "Requires a browser with Canvas 2D",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "Nine editorial cover styles",
+    "1:1, 16:9 and 4:5 frames",
+    "PNG export up to 5120 px",
+    "Compose your own screenshot or logo into the cover",
+    "Deterministic seeds: the same seed always draws the same cover"
+  ],
+  "author": { "@type": "Person", "name": "Cyrus Cai", "url": "https://x.com/cyrusss_7" },
+  "license": "https://opensource.org/licenses/MIT",
+  "codeRepository": "https://github.com/cyrus-cai/oai-style-cover",
+  "screenshot": "https://oai-cover.vercel.app/og.jpg"
+}
+</script>
 </head>
 <body class="view-rack boot">
 
@@ -16,7 +60,7 @@
 <a class="brand" href="./" aria-label="oai-style-cover">
   <span class="brand-mark">
     <i class="bm-back"></i>
-    <img class="bm-front" src="favicon.png?v=37" alt="">
+    <img class="bm-front" src="favicon.png?v=38" alt="">
   </span>
   <span class="brand-name"><b>oai</b>-style-cover</span>
 </a>
@@ -25,6 +69,20 @@
 </a>
 
 <main>
+  <!-- The page is nine canvases and a toolbar; a screen reader and a crawler
+       that doesn't run scripts would otherwise find nothing to read. -->
+  <div class="sr-only">
+    <h1>oai-style-cover, an editorial cover generator</h1>
+    <p>
+      Nine cover styles drawn in the browser with Canvas 2D: Cool Optical, Organic Bloom,
+      Aurora Film, Minimal Type, Utility Cards, Brand Lockup, Product UI, Semantic Object
+      and Signal Poster. Pick one, type a title, choose a 1:1, 16:9 or 4:5 frame, and save a
+      PNG up to 5120 px for a blog post, a deck or a social card. You can also compose your
+      own screenshot or logo into the cover. Nothing is uploaded and no image model is
+      involved: every frame is a program, and the same seed always draws the same cover.
+    </p>
+  </div>
+
   <section id="rack" aria-label="Style collection">
     <div class="rack-row" id="rack-row"></div>
   </section>
@@ -65,8 +123,8 @@
 
 <p class="credit">Inspired by <a href="https://github.com/Niall-Young/openai-cover-skill" target="_blank" rel="noopener">openai-editorial-cover</a></p>
 
-<script src="engine.js?v=37"></script>
-<script src="app.js?v=37"></script>
+<script src="engine.js?v=38"></script>
+<script src="app.js?v=38"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

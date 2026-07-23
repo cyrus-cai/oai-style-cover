@@ -1,0 +1,31 @@
+# oai-style-cover
+
+> An editorial cover generator. Nine cover styles are drawn in the browser with
+> Canvas 2D and saved as PNG up to 5120 px. No image model, no upload, no account.
+
+Open https://oai-cover.vercel.app and nine covers are already on the shelf. Click one
+to open it, type a title, press space for another version, press D to save a PNG.
+Frames are 1:1, 16:9 and 4:5. You can drop in your own screenshot or logo and it is
+composed into the cover locally; nothing leaves the browser.
+
+Every cover is a program rather than a generated image, so the same seed always draws
+the same picture, and an export is deterministic at any size.
+
+## The nine styles
+
+- Cool Optical — cool gradients folded like light through glass
+- Organic Bloom — petals and soft botanical forms
+- Aurora Film — thin iridescent film, aurora colours
+- Minimal Type — flat colour, one confident line of type, a marker gesture
+- Utility Cards — small functional tiles on a calm ground
+- Brand Lockup — one or two marks centred, with a thin divider
+- Product UI — an app window rendered as illustration
+- Semantic Object — macro material: phyllotaxis, stacked paper, heat fins, woven cloth
+- Signal Poster — high-energy radial bursts, meteor rain, horizontal rush
+
+## Details
+
+- Free and open source, MIT: https://github.com/cyrus-cai/oai-style-cover
+- Static site: no build step, no dependencies, no backend
+- The design language comes from the openai-editorial-cover prompt skill, rewritten as code
+- Author: Cyrus Cai, https://x.com/cyrusss_7
