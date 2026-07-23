@@ -1,0 +1,469 @@
+:root {
+  --ink: #ececea;
+  --muted: #8d8d94;
+  --faint: #55555b;
+  --wall: #0c0c0e;
+  --hair: #26262a;
+  --press: rgba(255, 255, 255, 0.08);
+  --surface: rgba(28, 28, 32, 0.66);
+  --surface-shadow: 0 10px 34px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.3);
+  --shadow: 0 30px 100px rgba(0, 0, 0, 0.55), 0 4px 18px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 38px 120px rgba(0, 0, 0, 0.65), 0 6px 22px rgba(0, 0, 0, 0.45);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Inter, "PingFang SC", "Hiragino Sans GB", "Segoe UI", Arial, sans-serif;
+  background: var(--wall);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+main {
+  height: 100vh;
+  height: 100dvh; /* mobile URL bars make 100vh taller than the visible area */
+  display: grid;
+  place-items: center;
+}
+
+/* two scenes share one cell */
+#rack, #focus {
+  grid-area: 1 / 1;
+  transition: opacity 0.4s ease, transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.45s ease;
+}
+body.view-rack #focus { opacity: 0; pointer-events: none; transform: translateY(26px) scale(0.99); }
+/* the shelf stays present behind the cover, thrown out of focus */
+body.view-focus #rack {
+  opacity: 0.3;
+  pointer-events: none;
+  transform: scale(1.06);
+  filter: blur(26px);
+}
+
+/* during a shared-element flight the scenes must not animate on their own */
+body.flight #rack, body.flight #focus {
+  transition: none;
+  transform: none;
+}
+body.flight #rack { transition: opacity 0.3s ease; }
+
+/* ================= the rack ================= */
+
+#rack {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  perspective: 1600px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+#rack::-webkit-scrollbar { display: none; }
+
+/* The card is bounded by height AND width: on a narrow screen a
+ * height-only rule squeezes nine covers into unreadable slivers. */
+.rack-row {
+  --card-w: min(calc(78vh * 0.62), 60vw);
+  --card-w: min(calc(78dvh * 0.62), 60vw);
+  --card-h: calc(var(--card-w) / 0.62);
+  --slice: clamp(calc(var(--card-w) * 0.24), calc((100vw - var(--card-w) - 140px) / 8), calc(var(--card-w) * 0.5));
+  display: flex;
+  align-items: center;
+  flex: none;
+  transform-style: preserve-3d;
+  padding: 0 70px;
+  margin: auto; /* centers when it fits, scrolls when it doesn't */
+}
+
+.card {
+  position: relative;
+  flex: none;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  margin-right: calc(var(--slice) - var(--card-w));
+  transform: rotateY(22deg);
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s ease;
+  filter: brightness(0.6);
+}
+.card:last-child { margin-right: 0; }
+
+body.boot .card { animation: card-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards; }
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.11s; }
+.card:nth-child(3) { animation-delay: 0.17s; }
+.card:nth-child(4) { animation-delay: 0.23s; }
+.card:nth-child(5) { animation-delay: 0.29s; }
+.card:nth-child(6) { animation-delay: 0.35s; }
+.card:nth-child(7) { animation-delay: 0.41s; }
+.card:nth-child(8) { animation-delay: 0.47s; }
+.card:nth-child(9) { animation-delay: 0.53s; }
+@keyframes card-in {
+  from { opacity: 0; transform: rotateY(22deg) translateY(60px); }
+  to   { opacity: 1; transform: rotateY(22deg) translateY(0); }
+}
+
+.card:hover, .card:focus-visible {
+  transform: rotateY(4deg) translateZ(100px);
+  filter: brightness(1);
+  z-index: 3;
+}
+.card:hover ~ .card, .card:focus-visible ~ .card {
+  transform: rotateY(22deg) translateX(calc(var(--card-w) * 0.34));
+}
+.card:focus-visible { outline: none; }
+
+/* the name is an answer to attention, not permanent furniture */
+.card-label {
+  position: absolute;
+  top: -32px;
+  left: 6px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.32s ease, transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-label small {
+  color: var(--faint);
+  margin-left: 7px;
+}
+.card:hover .card-label, .card:focus-visible .card-label {
+  opacity: 1;
+  transform: none;
+}
+
+.card-canvas {
+  display: block;
+  width: var(--card-w);
+  height: var(--card-h);
+  object-fit: cover; /* the spine is a crop of the full frame, not a reflow */
+  border-radius: 8px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65), 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+/* the shared element in flight */
+.traveler {
+  position: fixed;
+  z-index: 50;
+  overflow: hidden;
+  border-radius: 8px;
+  pointer-events: none;
+  will-change: transform, opacity;
+  box-shadow: var(--shadow);
+}
+.traveler canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* ================= the focus scene ================= */
+
+#focus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* it must span the viewport, or the grid shrinks it to the cover's
+   * width and clicks beside the cover never reach the dismiss handler */
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+}
+
+#back {
+  position: fixed;
+  top: 22px;
+  left: 22px;
+  z-index: 60;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--hair);
+  border-radius: 50%;
+  background: var(--surface);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+#back svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+#back:hover { color: var(--ink); }
+#back:active { transform: scale(0.92); }
+#back:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 2px; }
+body.view-rack #back { opacity: 0; pointer-events: none; transform: translateX(-8px); }
+
+/* The mark is one of the product's own frames — the same copper spiral the
+ * tab icon carries — so the identity is made of the thing it makes. */
+.brand {
+  position: fixed;
+  top: 22px;
+  left: 24px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  user-select: none;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+body.view-focus .brand { transform: translateX(50px); }
+
+/* two covers leaning on a shelf: the silhouette survives at any size,
+ * while the face carries a real frame from the engine */
+.brand-mark {
+  position: relative;
+  display: block;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.brand-mark i, .brand-mark img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 2.5px;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.bm-back {
+  width: 13px;
+  height: 20px;
+  margin: -10px 0 0 -6.5px;
+  background: #4e4d57;
+  transform: translateX(-7.5px) rotate(-17deg);
+}
+.bm-front {
+  width: 16px;
+  height: 23px;
+  margin: -11.5px 0 0 -8px;
+  object-fit: cover;
+  transform: translateX(4px) rotate(-9deg);
+  box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.7);
+}
+.brand:hover .bm-back { transform: translateX(-10px) rotate(-24deg); }
+.brand:hover .bm-front { transform: translateX(5px) rotate(-4deg); }
+
+.brand-name {
+  font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--muted);
+  transition: color 0.25s ease;
+}
+.brand-name b { font-weight: 600; color: var(--ink); }
+.brand:hover .brand-name { color: var(--ink); }
+.brand:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 6px; border-radius: 4px; }
+
+/* the author's mark, opposite the product's — same whisper as the credit */
+.social {
+  position: fixed;
+  top: 22px;
+  right: 22px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--muted);
+  transition: color 0.25s ease, background 0.15s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadein 0.8s ease 0.8s backwards;
+}
+.social svg { width: 15px; height: 15px; fill: currentColor; }
+.social:hover { color: var(--ink); background: var(--press); }
+.social:active { transform: scale(0.92); }
+.social:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 2px; }
+
+.stage {
+  position: relative;
+  line-height: 0;
+}
+/* while the frame changes shape both layers are pinned to it and re-cropped */
+.stage.morphing { will-change: width, height; }
+.stage.morphing #cover.fill,
+.stage.morphing #ghost {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+}
+
+#cover {
+  max-width: min(88vw, 920px);
+  max-height: 70vh;
+  width: auto;
+  height: auto;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: opacity 0.14s ease, transform 0.14s ease, box-shadow 0.25s ease;
+}
+#cover:hover { box-shadow: var(--shadow-hover); }
+#cover:active { transform: scale(0.9965); }
+#cover.busy { opacity: 0.72; }
+#cover:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
+
+/* the previous frame, held while the next one is composed, then released */
+#ghost {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+}
+
+/* ---- the bar: one quiet instrument ---- */
+.bar {
+  margin-top: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  row-gap: 10px;
+  padding: 10px 18px;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  background: var(--surface);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow: var(--surface-shadow);
+}
+
+.sep { width: 1px; height: 14px; background: var(--hair); }
+
+.ratios { display: flex; gap: 4px; }
+.ratios button, .acts button, #shuffle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--muted);
+}
+.ratios button:hover, .acts button:hover, #shuffle:hover { color: var(--ink); background: var(--press); }
+.ratios button:focus-visible, .acts button:focus-visible, #shuffle:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 1px; }
+
+.ratios span { display: block; border: 1.5px solid currentColor; border-radius: 2.5px; }
+.r-sq { width: 13px; height: 13px; }
+.r-ls { width: 17px; height: 10px; }
+.r-pt { width: 11px; height: 14px; }
+.ratios button.on { color: var(--ink); }
+.ratios button.on span { background: currentColor; }
+
+#title-input {
+  width: 150px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  background: none;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 10px;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+#title-input::placeholder { color: var(--faint); }
+#title-input:hover { background: var(--press); }
+#title-input:focus { outline: none; background: var(--press); }
+
+.acts { display: flex; gap: 2px; }
+.acts svg, #shuffle svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.acts button, #shuffle { transition: color 0.15s ease, background 0.15s ease, transform 0.15s ease; }
+.acts button:active, #shuffle:active { transform: scale(0.92); }
+.acts button.loaded { color: var(--ink); }
+#asset-btn .i-cross { display: none; }
+#asset-btn.loaded .i-plus { display: none; }
+#asset-btn.loaded .i-cross { display: block; }
+#download .i-check { display: none; }
+#download.done { color: var(--ink); }
+#download.done .i-down { display: none; }
+#download.done .i-check { display: block; }
+
+/* ---- credit: a whisper in the corner ---- */
+.credit {
+  position: fixed;
+  right: 18px;
+  bottom: 14px;
+  z-index: 60;
+  font-size: 10px;
+  color: var(--faint);
+  user-select: none;
+  animation: fadein 0.8s ease 1s backwards;
+}
+.credit a { color: inherit; text-decoration: none; }
+.credit a:hover { color: var(--muted); text-decoration: underline; }
+
+/* Narrow screens can never fit nine covers side by side, so stop trying:
+ * show fewer, larger, and let the shelf be swiped with snap points. */
+@media (max-width: 900px) {
+  .rack-row {
+    --card-w: min(calc(80vh * 0.62), 78vw);
+    --card-w: min(calc(80dvh * 0.62), 78vw);
+    --slice: calc(var(--card-w) * 0.62);
+    padding: 0 26px;
+  }
+  #rack {
+    perspective: 1200px;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 26px;
+  }
+  .card {
+    transform: rotateY(13deg);
+    scroll-snap-align: center;
+  }
+  @keyframes card-in {
+    from { opacity: 0; transform: rotateY(13deg) translateY(60px); }
+    to   { opacity: 1; transform: rotateY(13deg) translateY(0); }
+  }
+  .card:hover ~ .card, .card:focus-visible ~ .card {
+    transform: rotateY(13deg) translateX(calc(var(--card-w) * 0.22));
+  }
+  /* without hover there is no way to ask for a name, so always answer */
+  .card-label { opacity: 1; transform: none; color: var(--muted); }
+  #cover { max-height: 52vh; }
+  .bar { border-radius: 22px; padding: 10px 14px; margin-left: 12px; margin-right: 12px; }
+  .sep { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

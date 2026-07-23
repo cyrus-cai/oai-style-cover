@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>oai-style-cover</title>
+<meta name="description" content="oai-style-cover — nine editorial cover styles, rendered procedurally in pure Canvas.">
+<link rel="icon" type="image/png" href="favicon.png?v=37">
+<link rel="stylesheet" href="style.css?v=37">
+</head>
+<body class="view-rack boot">
+
+<button id="back" title="Back to collection (Esc)" aria-label="Back">
+  <svg viewBox="0 0 24 24"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg>
+</button>
+<a class="brand" href="./" aria-label="oai-style-cover">
+  <span class="brand-mark">
+    <i class="bm-back"></i>
+    <img class="bm-front" src="favicon.png?v=37" alt="">
+  </span>
+  <span class="brand-name"><b>oai</b>-style-cover</span>
+</a>
+<a class="social" href="https://x.com/cyrusss_7" target="_blank" rel="noopener" title="@cyrusss_7 on X" aria-label="@cyrusss_7 on X">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+</a>
+
+<main>
+  <section id="rack" aria-label="Style collection">
+    <div class="rack-row" id="rack-row"></div>
+  </section>
+
+  <section id="focus">
+    <div class="stage">
+      <canvas id="cover" tabindex="0" title="Shuffle"></canvas>
+      <canvas id="ghost" aria-hidden="true"></canvas>
+    </div>
+
+    <div class="bar">
+      <div class="ratios" id="ratios">
+        <button data-v="square" class="on" title="1:1" aria-label="1:1"><span class="r-sq"></span></button>
+        <button data-v="landscape" title="16:9" aria-label="16:9"><span class="r-ls"></span></button>
+        <button data-v="portrait" title="4:5" aria-label="4:5"><span class="r-pt"></span></button>
+      </div>
+      <i class="sep"></i>
+      <input id="title-input" type="text" placeholder="Title" maxlength="60" autocomplete="off">
+      <i class="sep"></i>
+      <div class="acts">
+        <button id="asset-btn" title="Add asset" aria-label="Add asset">
+          <svg viewBox="0 0 24 24" class="i-plus"><path d="M12 5v14M5 12h14"/></svg>
+          <svg viewBox="0 0 24 24" class="i-cross"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <button id="download" title="Download PNG (D)" aria-label="Download PNG">
+          <svg viewBox="0 0 24 24" class="i-down"><path d="M12 4.5v10.5M7 10.5l5 4.5 5-4.5"/><path d="M5.5 19.5h13"/></svg>
+          <svg viewBox="0 0 24 24" class="i-check"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        </button>
+      </div>
+      <i class="sep"></i>
+      <button id="shuffle" title="Shuffle (Space)" aria-label="Shuffle">
+        <svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1L20.5 8"/><path d="M20.5 3.5V8H16"/></svg>
+      </button>
+      <input id="asset-input" type="file" accept="image/*" hidden>
+    </div>
+  </section>
+</main>
+
+<p class="credit">Inspired by <a href="https://github.com/Niall-Young/openai-cover-skill" target="_blank" rel="noopener">openai-editorial-cover</a></p>
+
+<script src="engine.js?v=37"></script>
+<script src="app.js?v=37"></script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
